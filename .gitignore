@@ -1,0 +1,27 @@
+# Gradle files
+.gradle/
+build/
+/build
+/*/build
+.kotlin/
+
+# IDEs and Editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+local.properties
+.DS_Store
+
+# Temporary files and logs
+hs_err_pid*
+hs_err_*.log
+replay_pid*
+*.log
+
+# Project specific
+EvidenciasPrevio/
