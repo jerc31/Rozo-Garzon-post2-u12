@@ -37,6 +37,26 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("keystore.jks")
+            storePassword = System.getenv("RELEASE_STORE_PASSWORD") ?: "placeholderPassword"
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: "placeholderAlias"
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: "placeholderPassword"
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
 }
 
 dependencies {
@@ -76,4 +96,11 @@ dependencies {
     
     // Shimmer
     implementation(libs.shimmer)
+
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.androidx.arch.core.testing)
 }

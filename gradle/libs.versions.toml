@@ -18,8 +18,16 @@ navigationCompose = "2.8.4"
 paging = "3.3.4"
 ksp = "2.0.21-1.0.26"
 shimmer = "0.5.0"
+mockk = "1.13.13"
+kotlinxCoroutinesTest = "1.9.0"
+turbine = "1.1.0"
+archCoreTesting = "2.2.0"
 
 [libraries]
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "shimmer" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
