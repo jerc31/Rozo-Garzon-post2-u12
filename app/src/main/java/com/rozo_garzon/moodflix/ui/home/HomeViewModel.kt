@@ -6,6 +6,7 @@ import com.rozo_garzon.moodflix.domain.model.*
 import com.rozo_garzon.moodflix.domain.repository.MovieRepository
 import com.rozo_garzon.moodflix.domain.repository.TvRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,15 +34,19 @@ class HomeViewModel @Inject constructor(
     private val _currentMood = MutableStateFlow(MoodType.HAPPY)
     val currentMood: StateFlow<MoodType> = _currentMood.asStateFlow()
 
+    private var loadJob: Job? = null
+
     init { loadContent(MoodType.HAPPY) }
 
     fun selectMood(mood: MoodType) {
+        if (_currentMood.value == mood && _uiState.value is HomeUiState.Success) return
         _currentMood.value = mood
         loadContent(mood)
     }
 
     private fun loadContent(mood: MoodType) {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
             combine(
                 movieRepo.getMoviesByMood(mood),
@@ -55,7 +60,8 @@ class HomeViewModel @Inject constructor(
                             featured = moviesResult.data.shuffled().firstOrNull() ?: moviesResult.data.firstOrNull()
                         )
                     }
-                    moviesResult is Result.Error -> HomeUiState.Error(moviesResult.exception.message ?: "Error")
+                    moviesResult is Result.Error -> HomeUiState.Error(moviesResult.exception.message ?: "Error de conexión")
+                    tvResult is Result.Error -> HomeUiState.Error(tvResult.exception.message ?: "Error de conexión")
                     else -> HomeUiState.Loading
                 }
             }.collect { state -> _uiState.value = state }

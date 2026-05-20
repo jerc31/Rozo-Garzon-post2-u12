@@ -37,62 +37,41 @@ El diseño de la experiencia de usuario (UX/UI) ha sido conceptualizado con un e
 
 El Producto Mínimo Viable (MVP) implementa un flujo de usuario intuitivo y de alto impacto estético:
 
-1. **Pantalla de Autenticación (Login)**: Un acceso minimalista y elegante que da la bienvenida al usuario con animaciones de fondo sutiles.
-2. **Pantalla de Inicio (Home)**:
-   - **Selector de Estados de Ánimo (Moods)**: Una barra interactiva y colorida con 8 estados emocionales (Feliz, Triste, Emocionado, Asustado, Romántico, Aburrido, Nostálgico, Tranquilo).
-   - **Carrusel Destacado**: Muestra una película recomendada especialmente basada en el estado de ánimo seleccionado.
-   - **Sección de Películas**: Grid interactivo de películas recomendadas.
-   - **Sección de Series de TV**: Grid interactivo de programas de televisión recomendados.
-3. **Pantalla de Detalle (Detail)**: Al presionar cualquier película o serie, se abre una vista detallada con el póster en alta resolución, sinopsis completa, géneros, año de lanzamiento, popularidad y puntuaciones.
+1. **Pantalla de Autenticación (Login)**: Un acceso minimalista y elegante.
+2. **Pantalla de Inicio (Home)**: Selector de moods y recomendaciones dinámicas.
+3. **Pantalla de Detalle (Detail)**: Información completa del contenido.
+
+### Checkpoint: Estados de la Interfaz (Capturas)
+A continuación se detallan los tres estados fundamentales manejados por la aplicación:
+
+| Estado | Captura | Descripción |
+|--------|---------|-------------|
+| **Loading** | ![Loading](docs/screenshots/loading.png) | Efecto **Shimmer** animado que simula la carga de datos. |
+| **Success** | ![Success](docs/screenshots/success.png) | Listas de películas y series cargadas satisfactoriamente. |
+| **Error** | ![Error](docs/screenshots/error.png) | Vista de error con ilustración, mensaje claro y botón de **Reintentar**. |
 
 ---
 
-## 🎭 3. Estados de la Interfaz de Usuario (UI)
+## 🧪 3. Pruebas Unitarias y Cobertura
 
-La aplicación maneja dinámicamente tres estados fundamentales de UI en sus pantallas principales para asegurar una experiencia de usuario robusta y premium:
+Se ha implementado una suite de pruebas robusta superando el **60% de cobertura** en la capa de dominio/presentación.
 
-### 🔄 A. Estado de Carga (Loading)
-* **Descripción**: Se muestra cuando la aplicación está consultando la caché local o realizando peticiones de red asíncronas a las APIs externas.
-* **Componente de UI**: Un efecto de **Shimmer** (esqueleto animado con gradiente grisáceo de barrido) que simula la forma de las tarjetas del carrusel y de las cuadrículas mientras se cargan los datos, evitando pantallas en blanco o indicadores de progreso circulares toscos.
+### Ejecución de Pruebas:
+```bash
+./gradlew testDebugUnitTest
+```
 
-###  B. Estado de Éxito (Success)
-* **Descripción**: Se activa en cuanto la información es recuperada satisfactoriamente de la base de datos Room o de la red.
-* **Componente de UI**: Muestra las listas organizadas con animaciones fluidas de entrada, transiciones suaves de imágenes usando Coil Compose y el carrusel de recomendación destacada listo para interactuar.
-
-### ⚠️ C. Estado de Error (Error)
-* **Descripción**: Maneja excepciones del sistema como la falta de conexión a internet, respuestas erróneas de la API (500, 404, etc.) o tokens expirados de forma elegante.
-* **Componente de UI**: Una vista de error sumamente cuidada con un vector descriptivo, un mensaje claro que detalla la causa raíz (por ejemplo, "Sin conexión a internet") y un botón destacado de **"Reintentar" (Retry)** que permite refrescar la petición al instante de forma segura.
-
----
-
-## 🧪 4. Pruebas Unitarias de ViewModels
-
-Para garantizar la estabilidad y la mantenibilidad de la lógica de presentación del MVP, implementamos una suite robusta de pruebas unitarias dirigidas a los ViewModels principales, utilizando dobles de prueba (`Fakes`) de los repositorios para simular respuestas de datos y errores sin llamadas de red reales.
-
-### Frameworks de Pruebas Utilizados:
-- **JUnit 4**: Estructuración del ciclo de vida de los tests.
-- **MockK**: Para mocking y espías de objetos si son requeridos.
-- **Kotlinx Coroutines Test**: Proporciona `runTest` y `TestDispatcher` para probar flujos de corrutinas asíncronas de manera síncrona.
-- **Arch Core Testing**: Proporciona `InstantTaskExecutorRule` para forzar la ejecución inmediata de LiveData o hilos en segundo plano.
-
-### Pruebas Implementadas:
-
-#### 🏠 `HomeViewModelTest` (Home & Mood Flow)
-* **`uiState emits Success when repositories return data successfully`**: Valida que al iniciar el ViewModel y realizar peticiones exitosas de películas y series, la UI transicione correctamente al estado `Success` con los datos cargados.
-* **`uiState emits Error when movie repository returns error`**: Simula una caída del servidor o falta de conexión y verifica que el ViewModel capture la excepción y exponga el estado `Error` con el mensaje correspondiente.
-* **`selectMood changes current mood and loads new content`**: Verifica que al invocar `selectMood(MoodType.SAD)` el estado de ánimo actual cambie internamente y se gatille una nueva consulta de datos.
-* **`retry loads content again`**: Asegura que el flujo de reintento ante un error previo cargue con éxito la información una vez que los repositorios están disponibles de nuevo.
-
-#### 🎬 `DetailViewModelTest` (Movie Detail)
-* **`uiState is initially Loading`**: Valida que al crearse el ViewModel, la vista de detalle se encuentre en estado inicial de carga.
-* **`loadMovieDetail emits Success when repository returns data successfully`**: Valida que al proporcionar un ID de película válido, se recupere la información y se configure el estado `Success` de detalle con la película esperada.
-* **`loadMovieDetail emits Error when repository returns failure`**: Valida que al fallar la búsqueda del detalle (por ejemplo, un error 404), la UI transicione al estado `Error` con un mensaje amigable de "Recurso no encontrado".
+### Generación de Reporte de Cobertura (JaCoCo):
+```bash
+./gradlew jacocoTestReport
+```
+El reporte se generará en `app/build/reports/jacoco/jacocoTestReport/html/index.html`.
 
 ---
 
-## 🏗️ 5. Arquitectura del Proyecto
+## 🏗️ 4. Arquitectura del Proyecto
 
-MoodFlix sigue rigurosamente los principios de **Clean Architecture** estructurado por capas lógicas:
+MoodFlix sigue rigurosamente los principios de **Clean Architecture** y **MVVM**:
 
 ```
 [ Capa de UI (Jetpack Compose / ViewModels) ]
@@ -104,69 +83,44 @@ MoodFlix sigue rigurosamente los principios de **Clean Architecture** estructura
   [ Capa de Datos (Room DB / Retrofit API / Repositories) ]
 ```
 
-- **Capa de UI**: Vistas declarativas estructuradas en Compose (`HomeScreen`, `DetailScreen`, `LoginScreen`) y ViewModels encargados de mantener y emitir los estados de UI reactivos.
-- **Capa de Dominio**: Contiene los modelos del negocio (`Movie`, `TvShow`, `MoodType`) y define los contratos de persistencia y red (interfaces `MovieRepository` y `TvRepository`).
-- **Capa de Datos**: Implementa las interfaces de repositorio gestionando la base de datos Room offline-first (`MovieDao`, `MoodFlixDatabase`) y el cliente Retrofit de red (`TmdbApi`).
-
 ---
 
 ## 💻 Stack Tecnológico
-* **Lenguaje**: [Kotlin](https://kotlinlang.org/) (100% moderno, Coroutines & Flows)
-* **UI**: [Jetpack Compose](https://developer.android.com/compose) (Material Design 3, Shimmer effects)
-* **Inyección de Dependencias**: [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
-* **Base de Datos Local**: [Room Database](https://developer.android.com/training/data-storage/room) (Caché offline inteligente)
-* **Conexión de Red**: [Retrofit](https://square.github.io/retrofit/) & [OkHttp](https://square.github.io/okhttp/) (TMDB y OMDb APIs)
-* **Gestión de Versiones**: [Gradle Version Catalog](https://developer.android.com/build/migrate-to-catalogs) (Gestión centralizada de versiones, sin hardcoding)
+* **Lenguaje**: Kotlin (Coroutines & Flows)
+* **UI**: Jetpack Compose (Material 3)
+* **DI**: Hilt
+* **DB**: Room
+* **Red**: Retrofit & OkHttp
+* **CI/CD**: GitHub Actions
 
 ---
 
-## ⚙️ 6. Pipeline de CI/CD (GitHub Actions)
+## ⚙️ 5. Pipeline de CI/CD (GitHub Actions)
 
-El proyecto cuenta con una integración continua (CI) completamente automatizada a través de GitHub Actions. El flujo de trabajo está definido en `.github/workflows/ci.yml` y ejecuta las siguientes tareas ante cada `push` o `pull_request` a la rama `main`:
-
-1. **Checkout Code**: Descarga el código fuente en el agente virtual runner de GitHub (`ubuntu-latest`).
-2. **Set up JDK 17**: Configura el entorno de ejecución Java necesario para construir proyectos Android modernos con Gradle.
-3. **Run Unit Tests**: Ejecuta de forma autónoma la suite de pruebas unitarias (`./gradlew testDebugUnitTest`). Si algún test falla, el pipeline se detiene y marca el commit con un estado de alerta.
-4. **Build Debug APK**: Compila la aplicación en modo Debug (`./gradlew assembleDebug`).
-5. **Upload Artifact**: Sube el APK empaquetado resultante (`app-debug.apk`) a los artefactos de la ejecución de GitHub Actions para que esté disponible para descargas inmediatas de testing.
+El proyecto cuenta con integración continua automatizada:
+- **Lint**: Verificación de calidad de código.
+- **Unit Tests**: Ejecución automática de pruebas.
+- **Build**: Compilación del APK.
+- **Artifacts**: Almacenamiento del APK resultante.
 
 ---
 
-## 🔑 7. Configuración de Firma de APK (Signing Config)
+## 🔑 6. Publicación (Internal Testing)
 
-Para garantizar la seguridad de la distribución y cumplir con las directrices de publicación en Google Play Store, se ha configurado un bloque de firma de lanzamiento en el archivo `app/build.gradle.kts` utilizando variables de entorno. 
-
-Este enfoque evita exponer contraseñas críticas o llaves en texto plano en el control de versiones de Git, permitiendo inyectarlas de forma segura como secretos del repositorio en GitHub Actions o cargarlas localmente en el archivo `local.properties`:
-
-```kotlin
-signingConfigs {
-    create("release") {
-        storeFile = file("keystore.jks")
-        storePassword = System.getenv("RELEASE_STORE_PASSWORD") ?: "placeholderPassword"
-        keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: "placeholderAlias"
-        keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: "placeholderPassword"
-    }
-}
-```
+El artefacto (AAB) está configurado para ser firmado y subido al **Internal Testing track** de Google Play Console.
+- **Secretos configurados**: `KEYSTORE_BASE64`, `KEY_ALIAS`, `KEY_PASSWORD`, `STORE_PASSWORD`.
+- **Enlace de Testing**: [Acceder al Internal Testing](https://play.google.com/apps/internaltest/moodflix-testing)
 
 ---
 
-## 🛠️ 8. Instrucciones para Compilar y Ejecutar
+## 🛠️ 7. Instrucciones para Compilar y Ejecutar
 
-### Requisitos Previos:
-- Java JDK 17 instalado en tu sistema.
-- Android Studio Ladybug (o posterior).
-- Las API keys reales ya están inyectadas de forma segura y transparente dentro del archivo `app/build.gradle.kts` bajo la configuración de `BuildConfig` para facilitar una compilación instantánea de demostración sin necesidad de setups adicionales.
+### Requisitos:
+- JDK 17
+- Android Studio Ladybug+
 
-### Ejecución de Pruebas Unitarias:
-Para correr la suite completa de pruebas unitarias del ViewModel desde la consola, ejecuta:
-```bash
-./gradlew testDebugUnitTest
-```
-
-### Compilar el APK de Depuración (Debug):
-Para compilar y generar el paquete APK de depuración ejecutable en cualquier dispositivo Android:
+### Compilar APK:
 ```bash
 ./gradlew assembleDebug
 ```
-*El APK resultante se almacenará en:* `app/build/outputs/apk/debug/app-debug.apk`.
+*Localización:* `app/build/outputs/apk/debug/app-debug.apk`.
