@@ -31,6 +31,14 @@ class MovieRepositoryImpl @Inject constructor(
             emit(Result.Success(movies))
             
             // Sync cache
+            moodCacheDao.insertMoodCache(MoodCacheEntity(
+                moodId = mood.id,
+                moodLabel = mood.label,
+                genreIds = mood.genreIds.joinToString(","),
+                lastUpdated = System.currentTimeMillis(),
+                totalResults = response.totalResults
+            ))
+
             val entities = response.results.map { dto ->
                 MovieEntity(
                     id = dto.id, moodId = mood.id, title = dto.title ?: "",
