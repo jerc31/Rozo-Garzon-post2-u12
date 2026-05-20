@@ -62,6 +62,19 @@ android {
             enableUnitTestCoverage = true
         }
     }
+    
+    testOptions {
+        unitTests.all {
+            it.configure<JacocoTaskExtension> {
+                isIncludeNoLocationClasses = true
+                excludes = listOf("jdk.internal.*")
+            }
+        }
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.12"
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
@@ -85,7 +98,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     sourceDirectories.setFrom(files(mainSrc))
     classDirectories.setFrom(files(debugTree))
     executionData.setFrom(fileTree(project.layout.buildDirectory.get()) {
-        include("jacoco/testDebugUnitTest.exec")
+        include("**/*.exec", "**/*.ec")
     })
 }
 
